@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">PokemonChart</string>
+    <string name="normal">一般</string>
+    <string name="fire">火</string>
+    <string name="water">水</string>
+    <string name="electric">電</string>
+    <string name="grass">草</string>
+    <string name="ice">冰</string>
+    <string name="fighting">格鬥</string>
+    <string name="poison">毒</string>
+    <string name="ground">地面</string>
+    <string name="flying">飛行</string>
+    <string name="pyschic">超能力</string>
+    <string name="bug">蟲</string>
+    <string name="rock">岩石</string>
+    <string name="ghost">幽靈</string>
+    <string name="dragon">龍</string>
+    <string name="dark">惡</string>
+    <string name="steel">鋼</string>
+    <string name="fairy">仙子</string>
+
+    //Toast Message
+    <string name="choiseSameType">你選擇了同一個屬性，請選另一個屬性</string>
+
+</resources>
