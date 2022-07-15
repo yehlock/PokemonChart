@@ -4,31 +4,37 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class informationActivity extends AppCompatActivity {
 
-    TextView tvNameZh,tvNameEn,tvNameJp,tvDexNational,tvDexSinnoh,tvDexHisui,tvHeight,tvWeight;
+    TextView tvNameZh,tvNameEn,tvNameJp,tvDexNational,tvDexSinnoh,tvDexHisui,tvDexGalar,tvHeight,tvWeight;
     ImageView typesIconI,typesIconII,pokePic;
+    GridLayout gWeakAgainst,gResistantAgainst,gNormalDamage;
     //TextView tvNormal,tvFire,tvWater,tvElectric,tvGrass,tvIce,tvFighting,tvPoison;
     //TextView tvGround,tvFlying,tvPsychic,tvBug,tvRock,tvGhost,tvDragon,tvDark,tvSteel,tvFairy;
+    private static String[] typeList = {"normal","fire","water","electric","grass","ice","fighting","poison","ground","flying",
+            "psychic","bug","rock","ghost","dragon","dark","steel","fairy"};
+    String[] typeListZh = {"一般","火","水","電","草","冰","格鬥","毒","地面","飛行",
+            "超能力","蟲","岩石","幽靈","龍","惡","鋼","仙子"};
+    String[] typeColour = {"9099a1","ff9c54","4d90d5","f3d23b","63bb5b","74cec0","ce4069","ab6ac8","d97746","8fa8dd",
+            "f97176","90c12c","c7b78b","5269ac","0a6dc4","5a5366","5a8ea1","ec8fe6"};
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
@@ -48,6 +54,11 @@ public class informationActivity extends AppCompatActivity {
         typesIconI = (ImageView) findViewById(R.id.infoIconI);
         typesIconII = (ImageView) findViewById(R.id.infoIconII);
         pokePic = (ImageView) findViewById(R.id.infoPokePic);
+        tvDexGalar = (TextView) findViewById(R.id.infoDexGalar);
+        gWeakAgainst = (GridLayout) findViewById(R.id.infoWeekAgainst);
+        gResistantAgainst = (GridLayout) findViewById(R.id.infoResistantAgainst);
+        gNormalDamage = (GridLayout) findViewById(R.id.infoNormalDamage);
+
 /*
         tvNormal = (TextView)findViewById(R.id.infoNormal);
         tvFire = (TextView)findViewById(R.id.infoFire);
@@ -74,6 +85,7 @@ public class informationActivity extends AppCompatActivity {
             String pokemonName;
             pokeDexData = Pokedex.pokemonsAll();
             pokemonName = bundle.getString("pokemon");
+
             for(int i=0;i<pokeDexData.length;i++){
                 if(pokeDexData[i][4].equals(pokemonName)){
                     Log.v("msg","MA Pokemon 2 = "+pokemonName+" length = "+pokeDexData.length);
@@ -88,15 +100,22 @@ public class informationActivity extends AppCompatActivity {
                     tvNameEn.setText(nameEn.substring(0,1).toUpperCase()+nameEn.substring(1));
                     tvNameJp.setText(nameJp);
                     tvDexNational.setText("全國\n#"+dexNational);
+
                     if(dexSinnoh.equals("-1")){tvDexSinnoh.setText("無神奧編號");}
                     else{tvDexSinnoh.setText("神奧 #"+dexSinnoh);}
                     //if(dexHisui.equals("-1")){tvDexHisui.setText("無洗翠編號");}
                     //else{tvDexHisui.setText("洗翠 #"+dexHisui);}
-                    tvHeight.setText(height+" cm");tvWeight.setText(weight+" kg");
+                    if(dexSinnoh.equals("-1")){tvDexGalar.setText("無加勒爾編號");}
+                    else{tvDexSinnoh.setText("加勒爾 #"+dexSinnoh);}
+                    tvHeight.setText(height);tvWeight.setText(weight);
                     typesIconI.setImageResource(setIcon(typeI));
                     typesIconII.setImageResource(setIcon(typeII));
 
-                    //setChart(typeI,typeII);
+                    Map<String,Double> setTypeEff = new HashMap<>();
+                    setTypeEff = setEffectiveness(typeI,typeII);
+                    setEff(setTypeEff);
+
+
 
                     //String pokeUrl = "https://media.52poke.com/wiki/2/21/001Bulbasaur.png";
                     if (pokeUrl.equals("no url")){pokeUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQREJH9KAgLYCQOcfuFYMsCtXybs4laSW80CHhy9tGs6ifnQHWAEykSGXuE91LcAkUYRJs&usqp=CAU";}
@@ -111,7 +130,56 @@ public class informationActivity extends AppCompatActivity {
             }
         }
     }
-    
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private static Map<String, Double> setEffectiveness(String typeI, String typeII){
+        double[] typeChart;
+        if(typeII.equals("None")){
+            typeChart = Chart.whichType(typeI);
+        }else {
+            typeChart = Chart.typeCalculate(typeI,typeII);
+        }
+        Map<String,Double> typeEffMap = new HashMap<>();
+        for(int i=0;i<typeList.length;i++){
+            typeEffMap.put(typeList[i],typeChart[i]);
+        }
+        Map<String, Double> sortedTypeChart = sortByValue(typeEffMap);
+        Log.v("msg", String.valueOf(sortedTypeChart));
+
+        return sortedTypeChart;
+
+    }
+
+    private static Map<String, Double> sortByValue(Map<String, Double> unsortMap) {
+
+        // 1. Convert Map to List of Map
+        List<Map.Entry<String, Double>> list =
+                new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        //    Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> o1,
+                               Map.Entry<String, Double> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
+        Map<String, Double> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Double> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        /*
+        //classic iterator example
+        for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext(); ) {
+            Map.Entry<String, Integer> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }*/
+        return sortedMap;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setChart(String typeI, String typeII){
         if(typeII.equals("None")){
@@ -134,7 +202,8 @@ public class informationActivity extends AppCompatActivity {
             if(list[i]==0.5){stringList.add(" x½");}
             if(list[i]==0.25){stringList.add(" x¼");}
             if(list[i]==0){stringList.add(" x0");}
-        }/*
+        }
+        /*
         tvNormal.setText(stringList.get(0));
         tvFire.setText(stringList.get(1));
         tvWater.setText(stringList.get(2));
@@ -196,4 +265,60 @@ public class informationActivity extends AppCompatActivity {
         }
         return 0;
     }
+
+    private void setEff(Map<String, Double> typeEffMap){
+        Map<String,Double> weakAgainst = new HashMap<>();
+        Map<String,Double> resistantAgainst = new HashMap<>();
+        Map<String,Double> normalDamage = new HashMap<>();
+
+        for (Map.Entry<String, Double> eff : typeEffMap.entrySet()){
+            if(eff.getValue() < 1){
+                resistantAgainst.put(eff.getKey(), eff.getValue());
+            }else if(eff.getValue() == 1){
+                normalDamage.put(eff.getKey(), eff.getValue());
+            }else{
+                weakAgainst.put(eff.getKey(), eff.getValue());
+            }
+        }
+        setGridLayout(gWeakAgainst,weakAgainst);
+        setGridLayout(gNormalDamage,normalDamage);
+        setGridLayout(gResistantAgainst,resistantAgainst);
+    }
+
+    private void setGridLayout(GridLayout gridLayout,Map<String, Double> typeEffMap){
+        gridLayout.removeAllViews();
+        int total = typeEffMap.size();
+        int column = 3;
+        int row = total/column;
+        if(total%column!=0){row+=1;}
+
+        ArrayList<String> keyList = new ArrayList<String>(typeEffMap.keySet());
+        ArrayList<Double> valueList = new ArrayList<Double>(typeEffMap.values());
+        ArrayList<String> margeList = new ArrayList<>();
+        for(int i=0;i<keyList.size();i++){
+            margeList.add(keyList.get(i) +":"+ valueList.get(i));
+        }
+
+        gridLayout.setColumnCount(column);
+        gridLayout.setRowCount(row);
+
+        for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
+            if (c == column) {
+                c = 0;
+                r++;
+            }
+            TextView textView = new TextView(this);
+            textView.setText(margeList.get(i));
+
+
+            GridLayout.Spec rowSpan = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            GridLayout.Spec colspan = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+            param.columnSpec = colspan;
+            param.rowSpec = rowSpan;
+            param.setGravity(Gravity.CENTER);
+            gridLayout.addView(textView, param);
+        }
+    }
+
 }

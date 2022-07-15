@@ -22,4 +22,10 @@
     //Toast Message
     <string name="choiseSameType">你選擇了同一個屬性，請選另一個屬性</string>
 
+    //Info
+    <string name="height">身高</string>
+    <string name="weight">體重</string>
+    <string name="kg">公斤</string>
+    <string name="cm">公分</string>
+
 </resources>

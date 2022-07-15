@@ -18,6 +18,7 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerViewAdapter mAdapter;
     String[] pokedex = Pokedex.pokemonsName();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

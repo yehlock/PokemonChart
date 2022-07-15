@@ -29,8 +29,8 @@ public class DatabaseManager {
     public void insert(String name, String desc){
 
     }
-
+    /*
     public Cursor fetch(){
-        Cursor cursor = this.sqLiteDatabase.query(sqlDataBaseHelper.table, null, ContentValues);
-    }
+        //Cursor cursor = this.sqLiteDatabase.query(sqlDataBaseHelper.table, null, ContentValues);
+    }*/
 }

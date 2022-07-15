@@ -20,4 +20,8 @@
     <string name="steel">Steel</string>
     <string name="fairy">Fairy</string>
     <string name="choiseSameType">You have been enter the same type, Please select another type</string>
+    <string name="height">身高</string>
+    <string name="weight">體重</string>
+    <string name="kg">公斤</string>
+    <string name="cm">公分</string>
 </resources>
