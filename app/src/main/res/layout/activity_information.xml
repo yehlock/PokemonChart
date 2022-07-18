@@ -263,12 +263,30 @@
 
                     </LinearLayout>
 
+
+
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/infoAbility1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="123"
+                    android:textSize="25sp"/>
+                <TextView
+                    android:id="@+id/infoAbility2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="123"
+                    android:textSize="25sp"/>
 
             </LinearLayout>
 
 
+
         </LinearLayout>
+
+
 
 
     </LinearLayout>
@@ -276,7 +294,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/dark">
 
         <TextView
             android:layout_width="match_parent"

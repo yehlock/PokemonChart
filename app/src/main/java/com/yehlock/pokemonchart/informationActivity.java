@@ -25,6 +25,7 @@ import java.util.Map;
 public class informationActivity extends AppCompatActivity {
 
     TextView tvNameZh,tvNameEn,tvNameJp,tvDexNational,tvDexSinnoh,tvDexHisui,tvDexGalar,tvHeight,tvWeight;
+    TextView tvAbility1, tvAbility2;
     ImageView typesIconI,typesIconII,pokePic;
     GridLayout gWeakAgainst,gResistantAgainst,gNormalDamage;
     //TextView tvNormal,tvFire,tvWater,tvElectric,tvGrass,tvIce,tvFighting,tvPoison;
@@ -43,6 +44,7 @@ public class informationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_information);
 
+        //Textview
         tvNameZh = (TextView) findViewById(R.id.infoNameZh);
         tvNameEn = (TextView) findViewById(R.id.infoNameEn);
         tvNameJp = (TextView) findViewById(R.id.infoNameJp);
@@ -51,10 +53,16 @@ public class informationActivity extends AppCompatActivity {
         tvDexHisui = (TextView) findViewById(R.id.infoDexHisui);
         tvHeight = (TextView) findViewById(R.id.infoHeight);
         tvWeight = (TextView) findViewById(R.id.infoWeight);
+        tvAbility1 = (TextView) findViewById(R.id.infoAbility1);
+        tvAbility2 = (TextView) findViewById(R.id.infoAbility2);
+        tvDexGalar = (TextView) findViewById(R.id.infoDexGalar);
+
+        //ImageView
         typesIconI = (ImageView) findViewById(R.id.infoIconI);
         typesIconII = (ImageView) findViewById(R.id.infoIconII);
         pokePic = (ImageView) findViewById(R.id.infoPokePic);
-        tvDexGalar = (TextView) findViewById(R.id.infoDexGalar);
+
+        //GridLayout
         gWeakAgainst = (GridLayout) findViewById(R.id.infoWeekAgainst);
         gResistantAgainst = (GridLayout) findViewById(R.id.infoResistantAgainst);
         gNormalDamage = (GridLayout) findViewById(R.id.infoNormalDamage);
@@ -89,12 +97,16 @@ public class informationActivity extends AppCompatActivity {
             for(int i=0;i<pokeDexData.length;i++){
                 if(pokeDexData[i][4].equals(pokemonName)){
                     Log.v("msg","MA Pokemon 2 = "+pokemonName+" length = "+pokeDexData.length);
-                    String dexNational = pokeDexData[i][0],dexSinnoh=pokeDexData[i][1];//,dexHisui=pokeDexData[i][10];
+                    String dexNational = pokeDexData[i][0],dexSinnoh=pokeDexData[i][1];
+                    //,dexHisui=pokeDexData[i][10];
+                    String dexGalar = "999"; //need to update
                     String nameZh = pokeDexData[i][4],nameEn=pokeDexData[i][2],nameJp=pokeDexData[i][3];
                     String typeI = pokeDexData[i][5];
                     String typeII = pokeDexData[i][6];
                     String height = pokeDexData[i][7],weight=pokeDexData[i][8];
-                    String pokeUrl = pokeDexData[i][9];
+                    String pokeImgUrl = pokeDexData[i][9];
+                    String pokeUrl = "https://wiki.52poke.com/zh-hant/"+nameZh;
+
                     //Log.v("msg",pokemonName + " typeI is "+typeI);
                     tvNameZh.setText(nameZh);
                     tvNameEn.setText(nameEn.substring(0,1).toUpperCase()+nameEn.substring(1));
@@ -105,8 +117,8 @@ public class informationActivity extends AppCompatActivity {
                     else{tvDexSinnoh.setText("神奧 #"+dexSinnoh);}
                     //if(dexHisui.equals("-1")){tvDexHisui.setText("無洗翠編號");}
                     //else{tvDexHisui.setText("洗翠 #"+dexHisui);}
-                    if(dexSinnoh.equals("-1")){tvDexGalar.setText("無加勒爾編號");}
-                    else{tvDexSinnoh.setText("加勒爾 #"+dexSinnoh);}
+                    if(dexGalar.equals("-1")){tvDexGalar.setText("無加勒爾編號");}
+                    else{tvDexGalar.setText("加勒爾 #"+dexGalar);}
                     tvHeight.setText(height);tvWeight.setText(weight);
                     typesIconI.setImageResource(setIcon(typeI));
                     typesIconII.setImageResource(setIcon(typeII));
@@ -115,15 +127,14 @@ public class informationActivity extends AppCompatActivity {
                     setTypeEff = setEffectiveness(typeI,typeII);
                     setEff(setTypeEff);
 
-
-
                     //String pokeUrl = "https://media.52poke.com/wiki/2/21/001Bulbasaur.png";
-                    if (pokeUrl.equals("no url")){pokeUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQREJH9KAgLYCQOcfuFYMsCtXybs4laSW80CHhy9tGs6ifnQHWAEykSGXuE91LcAkUYRJs&usqp=CAU";}
-                    LoadImg loadImg = (LoadImg) new LoadImg(pokePic).execute(pokeUrl);
-                    Log.v("msg", String.valueOf(loadImg));
-                    if(loadImg!=null){
-                        Log.v("msg","1111111");
-                    }
+                    if (pokeImgUrl.equals("no url")){pokeImgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQREJH9KAgLYCQOcfuFYMsCtXybs4laSW80CHhy9tGs6ifnQHWAEykSGXuE91LcAkUYRJs&usqp=CAU";}
+
+                    GetPokeData getPokeData = (GetPokeData) new GetPokeData(tvAbility1,tvAbility2).execute(pokeUrl);
+                    LoadImg loadImg = (LoadImg) new LoadImg(pokePic).execute(pokeImgUrl);
+
+                    //tvAbilities.setText((CharSequence) getPokeData);
+
                     findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     break;
                 }
@@ -144,7 +155,7 @@ public class informationActivity extends AppCompatActivity {
             typeEffMap.put(typeList[i],typeChart[i]);
         }
         Map<String, Double> sortedTypeChart = sortByValue(typeEffMap);
-        Log.v("msg", String.valueOf(sortedTypeChart));
+        //Log.v("msg", String.valueOf(sortedTypeChart));
 
         return sortedTypeChart;
 
@@ -285,7 +296,8 @@ public class informationActivity extends AppCompatActivity {
         setGridLayout(gResistantAgainst,resistantAgainst);
     }
 
-    private void setGridLayout(GridLayout gridLayout,Map<String, Double> typeEffMap){
+    @SuppressLint("ResourceType")
+    private void setGridLayout(GridLayout gridLayout, Map<String, Double> typeEffMap){
         gridLayout.removeAllViews();
         int total = typeEffMap.size();
         int column = 3;
@@ -307,18 +319,62 @@ public class informationActivity extends AppCompatActivity {
                 c = 0;
                 r++;
             }
+            int color = setChartBackgroundColor(keyList.get(i));
+
             TextView textView = new TextView(this);
-            textView.setText(margeList.get(i));
+            textView.setBackgroundResource(color);
+            textView.setText(keyList.get(i));
 
-
-            GridLayout.Spec rowSpan = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-            GridLayout.Spec colspan = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            GridLayout.Spec rowSpan = GridLayout.spec(GridLayout.UNDEFINED,  1f);
+            GridLayout.Spec colspan = GridLayout.spec(GridLayout.UNDEFINED,GridLayout.FILL, 1f);
             GridLayout.LayoutParams param = new GridLayout.LayoutParams();
             param.columnSpec = colspan;
             param.rowSpec = rowSpan;
             param.setGravity(Gravity.CENTER);
             gridLayout.addView(textView, param);
         }
+    }
+
+    private int setChartBackgroundColor(String type){
+        switch (type){
+            case "normal":
+                return R.color.normal;
+            case "fire":
+                return R.color.fire;
+            case "water":
+                return R.color.water;
+            case "electric":
+                return R.color.electric;
+            case "grass":
+                return R.color.grass;
+            case "ice":
+                return R.color.ice;
+            case "fighting":
+                return R.color.fighting;
+            case "poison":
+                return R.color.poison;
+            case "ground":
+                return R.color.ground;
+            case "flying":
+                return R.color.flying;
+            case "psychic":
+                return R.color.psychic;
+            case "bug":
+                return R.color.bug;
+            case "rock":
+                return R.color.rock;
+            case "ghost":
+                return R.color.ghost;
+            case "dragon":
+                return R.color.dragon;
+            case "dark":
+                return R.color.dark;
+            case "steel":
+                return R.color.steel;
+            case "fairy":
+                return R.color.fairy;
+        }
+        return 0;
     }
 
 }
